@@ -1,4 +1,4 @@
-
+.oauth-credentials
 *.yml
 **/resources
 
