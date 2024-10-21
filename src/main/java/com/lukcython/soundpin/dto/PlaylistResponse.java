@@ -16,9 +16,10 @@ public class PlaylistResponse {
         private final String description;
         private final String imageUrl;
         private boolean canModify;
+        private String status;
 
         @Builder
-        public PlaylistInfoResponse(Long id, String playlistId, String customTitle, String title, String description, String imageUrl, boolean canModify) {
+        public PlaylistInfoResponse(Long id, String playlistId, String customTitle, String title, String description, String imageUrl, boolean canModify, String status) {
             this.id = id;
             this.playlistId = playlistId;
             this.customTitle = customTitle;
@@ -26,6 +27,7 @@ public class PlaylistResponse {
             this.description = description;
             this.imageUrl = imageUrl;
             this.canModify = canModify;
+            this.status = status;
         }
 
         public static PlaylistInfoResponse of(Playlist playlist){
@@ -34,6 +36,7 @@ public class PlaylistResponse {
                     .title(playlist.getSnippet().getTitle())
                     .description(playlist.getSnippet().getDescription())
                     .imageUrl(playlist.getSnippet().getThumbnails() == null ? null : playlist.getSnippet().getThumbnails().getDefault().getUrl())
+                    .status(playlist.getStatus().getPrivacyStatus())
                     .build();
         }
 

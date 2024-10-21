@@ -27,7 +27,7 @@ public class PlaylistService {
     public List<PlaylistInfoResponse> getPlaylist() throws GeneralSecurityException, IOException {
         YouTube youtubeService = YoutubeApiUtil.getService();
         YouTube.Playlists.List request = youtubeService.playlists()
-                .list(Collections.singletonList("snippet"));
+                .list(Collections.singletonList("snippet, status"));
         PlaylistListResponse response = request.setMaxResults(25L)
                 .setMine(true)
                 .execute();
@@ -89,9 +89,10 @@ public class PlaylistService {
         playlist.setStatus(status);
 
         // Define and execute the API request
-        youtubeService.playlists()
-                .update(Collections.singletonList("snippet,status"), playlist);
-        return PlaylistInfoResponse.of(playlist).of(playlistRepository.findByPlaylistId(playlistId)
+        Playlist updatePlaylist = youtubeService.playlists()
+                .update(Collections.singletonList("snippet,status"), playlist).execute();
+
+        return PlaylistInfoResponse.of(updatePlaylist).of(playlistRepository.findByPlaylistId(playlistId)
                 .orElseThrow(() -> new IllegalArgumentException("Playlist를 찾을 수 없습니다.")));
     }
 
