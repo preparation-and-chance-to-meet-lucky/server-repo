@@ -105,4 +105,14 @@ public class PlaylistItemService {
         map.put("Likes", playlistItems.getLikes());
         return map;
     }
+
+    @Transactional
+    public Void deletePlaylistItem(String playlistItemId) throws GeneralSecurityException, IOException {
+        YouTube youtubeService = YoutubeApiUtil.getService();
+        // Define and execute the API request
+        youtubeService.playlistItems()
+                .delete(playlistItemId).execute();
+        playlistItemRepository.deleteByPlaylistItemId(playlistItemId);
+        return null;
+    }
 }

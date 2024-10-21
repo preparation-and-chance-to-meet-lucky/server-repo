@@ -44,4 +44,10 @@ public class PlaylistItemController {
                 .body(playlistItemService.updateLikes(id));
     }
 
+    @DeleteMapping("/playlistItems/{playlistItemId}")
+    public ResponseEntity<Void> deletePlaylistItem(@PathVariable("playlistItemId") String playlistItemId) throws GeneralSecurityException, IOException {
+        return ResponseEntity.ok()
+                .body(playlistItemService.deletePlaylistItem(playlistItemId));
+    }
+
 }
