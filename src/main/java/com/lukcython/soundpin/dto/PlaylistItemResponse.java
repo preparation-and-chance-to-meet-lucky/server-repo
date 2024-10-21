@@ -12,6 +12,8 @@ public class PlaylistItemResponse {
 
         private Long id;
 
+        private final String playlistItemId;
+
         private final String videoId;
 
         private final String videoTitle;
@@ -25,8 +27,9 @@ public class PlaylistItemResponse {
         private Long like;
 
         @Builder
-        public PlaylistItemInfoResponse(Long id, String videoId, String videoTitle, String imageUrl, int position, String videoOwnerChannelTitle) {
+        public PlaylistItemInfoResponse(Long id, String playlistItemId, String videoId, String videoTitle, String imageUrl, int position, String videoOwnerChannelTitle) {
             this.id = id;
+            this.playlistItemId = playlistItemId;
             this.videoId = videoId;
             this.videoTitle = videoTitle;
             this.imageUrl = imageUrl;
@@ -37,6 +40,7 @@ public class PlaylistItemResponse {
         public static PlaylistItemInfoResponse of (PlaylistItem playlistItem){
             return PlaylistItemInfoResponse.builder()
                     .videoId(playlistItem.getSnippet().getResourceId().getVideoId())
+                    .playlistItemId(playlistItem.getId())
                     .imageUrl(playlistItem.getSnippet().getThumbnails() == null? null : playlistItem.getSnippet().getThumbnails().getDefault().getUrl())
                     .position(playlistItem.getSnippet().getPosition().intValue())
                     .videoTitle(playlistItem.getSnippet().getTitle())

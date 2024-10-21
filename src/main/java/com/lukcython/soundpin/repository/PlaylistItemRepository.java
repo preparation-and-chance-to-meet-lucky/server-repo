@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface PlaylistItemRepository extends JpaRepository<PlaylistItems, Long> {
 
-    Optional<PlaylistItems> findByVideoId(String videoId);
+    Optional<PlaylistItems> findByPlaylistItemId(String playlistItemId);
 }

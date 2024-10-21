@@ -3,21 +3,21 @@ package com.lukcython.soundpin.service;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
+import com.google.api.services.youtube.model.PlaylistItemSnippet;
+import com.google.api.services.youtube.model.ResourceId;
 import com.lukcython.soundpin.domain.PlaylistItems;
-import com.lukcython.soundpin.domain.Playlists;
-import com.lukcython.soundpin.dto.PlaylistItemResponse;
-import com.lukcython.soundpin.dto.PlaylistItemResponse.*;
-import com.lukcython.soundpin.dto.PlaylistResponse;
+import com.lukcython.soundpin.dto.PlaylistItemRequest.InsertPlaylistItem;
+import com.lukcython.soundpin.dto.PlaylistItemRequest.UpdatePlaylistItem;
+import com.lukcython.soundpin.dto.PlaylistItemResponse.PlaylistItemInfoResponse;
 import com.lukcython.soundpin.repository.PlaylistItemRepository;
 import com.lukcython.soundpin.util.youtube.YoutubeApiUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -38,8 +38,71 @@ public class PlaylistItemService {
         return playlistItems.stream()
                 .map(PlaylistItemInfoResponse::of)
                 .map(playlistItem -> {
-                    Optional<PlaylistItems> play = playlistItemRepository.findByVideoId(playlistItem.getVideoId());
+                    Optional<PlaylistItems> play = playlistItemRepository.findByPlaylistItemId(playlistItem.getPlaylistItemId());
                     return playlistItem.of(play.orElseGet(() -> playlistItemRepository.save(PlaylistItems.of(playlistItem))));
                 }).toList();
+    }
+
+    @Transactional
+    public Void insertPlaylistItem(String playlistId, InsertPlaylistItem insertPlaylistItem) throws GeneralSecurityException, IOException {
+        YouTube youtubeService = YoutubeApiUtil.getService();
+
+        // Define the PlaylistItem object, which will be uploaded as the request body.
+        PlaylistItem playlistItem = new PlaylistItem();
+
+        // Add the snippet object property to the PlaylistItem object.
+        PlaylistItemSnippet snippet = new PlaylistItemSnippet();
+        snippet.setPlaylistId(playlistId);
+        snippet.setPosition(insertPlaylistItem.getPosition());
+        ResourceId resourceId = new ResourceId();
+        resourceId.setKind("youtube#video");
+        String videoId = insertPlaylistItem.getVideoUrl().split("v=")[1];
+        resourceId.setVideoId(videoId);
+        snippet.setResourceId(resourceId);
+        playlistItem.setSnippet(snippet);
+
+        // Define and execute the API request
+        youtubeService.playlistItems()
+                .insert(Collections.singletonList("snippet"), playlistItem).execute();
+        return null;
+    }
+
+    @Transactional
+    public PlaylistItemInfoResponse updateYoutubePlaylistItem(String playlistId, UpdatePlaylistItem updatePlaylistItem) throws GeneralSecurityException, IOException {
+        YouTube youtubeService = YoutubeApiUtil.getService();
+
+        // Define the PlaylistItem object, which will be uploaded as the request body.
+        PlaylistItem playlistItem = new PlaylistItem();
+
+        // Add the id string property to the PlaylistItem object.
+        playlistItem.setId(updatePlaylistItem.getPlaylistItemId());
+
+        // Add the snippet object property to the PlaylistItem object.
+        PlaylistItemSnippet snippet = new PlaylistItemSnippet();
+        snippet.setPlaylistId(playlistId);
+        snippet.setPosition(updatePlaylistItem.getPosition());
+        ResourceId resourceId = new ResourceId();
+        resourceId.setKind("youtube#video");
+        String videoId = updatePlaylistItem.getVideoUrl().split("v=")[1];
+        resourceId.setVideoId(videoId);
+        snippet.setResourceId(resourceId);
+        playlistItem.setSnippet(snippet);
+
+        // Define and execute the API request
+        PlaylistItem response = youtubeService.playlistItems()
+                .update(Collections.singletonList("snippet"), playlistItem).execute();
+        return PlaylistItemInfoResponse.of(response).of(playlistItemRepository.findByPlaylistItemId(updatePlaylistItem.getPlaylistItemId())
+                .orElseThrow(() -> new IllegalArgumentException("PlaylistItem을 찾을 수 없습니다.")));
+    }
+
+    @Transactional
+    //유저 추가
+    public Map<String, Long> updateLikes(Long id) {
+        PlaylistItems playlistItems = playlistItemRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("PlaylistItem을 찾을 수 없습니다."));
+        playlistItems.isLikes();
+        Map<String, Long> map = new HashMap<>();
+        map.put("Likes", playlistItems.getLikes());
+        return map;
     }
 }
