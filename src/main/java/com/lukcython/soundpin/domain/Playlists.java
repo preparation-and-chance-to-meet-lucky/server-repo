@@ -38,4 +38,12 @@ public class Playlists {
                 .canModify(true)
                 .build();
     }
+
+    public void isModify() {
+        this.canModify = !canModify;
+    }
+
+    public void isTitle(String customTitle) {
+        this.customTitle = customTitle;
+    }
 }

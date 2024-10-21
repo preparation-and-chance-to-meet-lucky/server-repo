@@ -28,12 +28,12 @@ public class PlaylistResponse {
             this.canModify = canModify;
         }
 
-        public static PlaylistInfoResponse of(Playlist response){
+        public static PlaylistInfoResponse of(Playlist playlist){
             return PlaylistInfoResponse.builder()
-                    .playlistId(response.getId())
-                    .title(response.getSnippet().getTitle())
-                    .description(response.getSnippet().getDescription())
-                    .imageUrl(response.getSnippet().getThumbnails().getDefault().getUrl())
+                    .playlistId(playlist.getId())
+                    .title(playlist.getSnippet().getTitle())
+                    .description(playlist.getSnippet().getDescription())
+                    .imageUrl(playlist.getSnippet().getThumbnails() == null ? null : playlist.getSnippet().getThumbnails().getDefault().getUrl())
                     .build();
         }
 
