@@ -21,7 +21,7 @@ import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 
-public class MyPlaylist {
+public class YoutubeApiUtil {
 
     private static DataStoreFactory dataStoreFactory;
     private static final String CLIENT_SECRETS= "client_secret.json";
