@@ -26,16 +26,16 @@ public class PlaylistItemController {
                 .body(playlistItemService.getPlaylistItems(playlistId));
     }
 
-    @PostMapping("/playlistItems/{playlistId}")
-    public ResponseEntity<Void> insertPlaylistItem(@PathVariable("playlistId") String playlistId, @RequestBody InsertPlaylistItem insertPlaylistItem) throws GeneralSecurityException, IOException {
+    @PostMapping("/playlistItems")
+    public ResponseEntity<Void> insertPlaylistItem(@RequestBody InsertPlaylistItem insertPlaylistItem) throws GeneralSecurityException, IOException {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(playlistItemService.insertPlaylistItem(playlistId, insertPlaylistItem));
+                .body(playlistItemService.insertPlaylistItem(insertPlaylistItem));
     }
 
-    @PutMapping("/playlistItems/youtube/{playlistId}")
-    public ResponseEntity<PlaylistItemInfoResponse> updateYoutubePlaylistItem(@PathVariable("playlistId") String playlistId, @RequestBody UpdatePlaylistItem updatePlaylistItem) throws GeneralSecurityException, IOException {
+    @PutMapping("/playlistItems/youtube")
+    public ResponseEntity<PlaylistItemInfoResponse> updateYoutubePlaylistItem(@RequestBody UpdatePlaylistItem updatePlaylistItem) throws GeneralSecurityException, IOException {
         return ResponseEntity.ok()
-                .body(playlistItemService.updateYoutubePlaylistItem(playlistId, updatePlaylistItem));
+                .body(playlistItemService.updateYoutubePlaylistItem(updatePlaylistItem));
     }
 
     @PatchMapping("/playlistItems/likes/{Id}")

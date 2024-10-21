@@ -44,7 +44,7 @@ public class PlaylistItemService {
     }
 
     @Transactional
-    public Void insertPlaylistItem(String playlistId, InsertPlaylistItem insertPlaylistItem) throws GeneralSecurityException, IOException {
+    public Void insertPlaylistItem(InsertPlaylistItem insertPlaylistItem) throws GeneralSecurityException, IOException {
         YouTube youtubeService = YoutubeApiUtil.getService();
 
         // Define the PlaylistItem object, which will be uploaded as the request body.
@@ -52,7 +52,7 @@ public class PlaylistItemService {
 
         // Add the snippet object property to the PlaylistItem object.
         PlaylistItemSnippet snippet = new PlaylistItemSnippet();
-        snippet.setPlaylistId(playlistId);
+        snippet.setPlaylistId(insertPlaylistItem.getPlaylistId());
         snippet.setPosition(insertPlaylistItem.getPosition());
         ResourceId resourceId = new ResourceId();
         resourceId.setKind("youtube#video");
@@ -68,7 +68,7 @@ public class PlaylistItemService {
     }
 
     @Transactional
-    public PlaylistItemInfoResponse updateYoutubePlaylistItem(String playlistId, UpdatePlaylistItem updatePlaylistItem) throws GeneralSecurityException, IOException {
+    public PlaylistItemInfoResponse updateYoutubePlaylistItem(UpdatePlaylistItem updatePlaylistItem) throws GeneralSecurityException, IOException {
         YouTube youtubeService = YoutubeApiUtil.getService();
 
         // Define the PlaylistItem object, which will be uploaded as the request body.
@@ -79,7 +79,7 @@ public class PlaylistItemService {
 
         // Add the snippet object property to the PlaylistItem object.
         PlaylistItemSnippet snippet = new PlaylistItemSnippet();
-        snippet.setPlaylistId(playlistId);
+        snippet.setPlaylistId(updatePlaylistItem.getPlaylistId());
         snippet.setPosition(updatePlaylistItem.getPosition());
         ResourceId resourceId = new ResourceId();
         resourceId.setKind("youtube#video");
