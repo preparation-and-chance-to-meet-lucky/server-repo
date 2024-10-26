@@ -5,8 +5,11 @@ import com.google.api.services.youtube.model.Playlist;
 import com.google.api.services.youtube.model.PlaylistListResponse;
 import com.google.api.services.youtube.model.PlaylistSnippet;
 import com.google.api.services.youtube.model.PlaylistStatus;
+import com.lukcython.soundpin.config.exception.ExceptionMessage;
+import com.lukcython.soundpin.config.exception.NotFoundException;
 import com.lukcython.soundpin.domain.Playlists;
-import com.lukcython.soundpin.dto.PlaylistRequest.*;
+import com.lukcython.soundpin.dto.PlaylistRequest.InsertPlaylistRequest;
+import com.lukcython.soundpin.dto.PlaylistRequest.UpdatePlaylistRequest;
 import com.lukcython.soundpin.dto.PlaylistResponse.PlaylistInfoResponse;
 import com.lukcython.soundpin.repository.PlaylistRepository;
 import com.lukcython.soundpin.util.youtube.YoutubeApiUtil;
@@ -93,13 +96,13 @@ public class PlaylistService {
                 .update(Collections.singletonList("snippet,status"), playlist).execute();
 
         return PlaylistInfoResponse.of(updatePlaylist).of(playlistRepository.findByPlaylistId(playlistId)
-                .orElseThrow(() -> new IllegalArgumentException("Playlist를 찾을 수 없습니다.")));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_NOT_FOUND)));
     }
 
     @Transactional
     public Map<String, Boolean> updateModify(Long id) {
         Playlists playlists =playlistRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Playlist를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_NOT_FOUND));
         playlists.isModify();
         Map<String, Boolean> map = new HashMap<>();
         map.put("canModify", playlists.isCanModify());
@@ -109,7 +112,7 @@ public class PlaylistService {
     @Transactional
     public  Map<String, String> updateTitle(Long id,  Map<String, String> customTitle) {
         Playlists playlists = playlistRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Playlist를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_NOT_FOUND));
         playlists.isTitle(customTitle.get("customTitle"));
         Map<String, String> map = new HashMap<>();
         map.put("customTitle", playlists.getCustomTitle());

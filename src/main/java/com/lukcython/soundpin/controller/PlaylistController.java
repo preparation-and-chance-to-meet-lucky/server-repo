@@ -1,5 +1,7 @@
 package com.lukcython.soundpin.controller;
 
+import com.lukcython.soundpin.config.response.ListResponse;
+import com.lukcython.soundpin.config.response.SingleResponse;
 import com.lukcython.soundpin.dto.PlaylistRequest.InsertPlaylistRequest;
 import com.lukcython.soundpin.dto.PlaylistRequest.UpdatePlaylistRequest;
 import com.lukcython.soundpin.dto.PlaylistResponse.PlaylistInfoResponse;
@@ -22,40 +24,40 @@ public class PlaylistController {
     private final PlaylistService playlistService;
 
     @GetMapping("/playlists")
-    public ResponseEntity<List<PlaylistInfoResponse>> getPlaylist() throws GeneralSecurityException, IOException {
+    public ResponseEntity<ListResponse<PlaylistInfoResponse>> getPlaylist() throws GeneralSecurityException, IOException {
         return ResponseEntity.ok()
-                .body(playlistService.getPlaylist());
+                .body(new ListResponse<>(200, "플레이리스트 반환 완료", playlistService.getPlaylist()));
     }
 
 
     @PostMapping("/playlists")
-    public ResponseEntity<Void> insertPlaylist(@RequestBody InsertPlaylistRequest playlistRequest) throws GeneralSecurityException, IOException {
+    public ResponseEntity<SingleResponse<Void>> insertPlaylist(@RequestBody InsertPlaylistRequest playlistRequest) throws GeneralSecurityException, IOException {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(playlistService.insertPlaylist(playlistRequest));
+                .body(new SingleResponse<>(201, "플레이리스트 추가 완료", playlistService.insertPlaylist(playlistRequest)));
     }
 
     @PutMapping("/playlists/youtube/{playlistsId}")
-    public ResponseEntity<PlaylistInfoResponse> updateYoutubePlaylist(@PathVariable("playlistsId") String playlistId, @RequestBody UpdatePlaylistRequest updatePlaylistRequest) throws GeneralSecurityException, IOException {
+    public ResponseEntity<SingleResponse<PlaylistInfoResponse>> updateYoutubePlaylist(@PathVariable("playlistsId") String playlistId, @RequestBody UpdatePlaylistRequest updatePlaylistRequest) throws GeneralSecurityException, IOException {
         return ResponseEntity.ok()
-                .body(playlistService.updateYoutubePlaylist(playlistId, updatePlaylistRequest));
+                .body(new SingleResponse<>(200, "(유튜브) 플레이리스트 수정 완료", playlistService.updateYoutubePlaylist(playlistId, updatePlaylistRequest)));
     }
 
     @PatchMapping("/playlists/modify/{Id}")
-    public ResponseEntity<Map<String, Boolean>> updateModify(@PathVariable("Id") Long id){
+    public ResponseEntity<SingleResponse<Map<String, Boolean>>> updateModify(@PathVariable("Id") Long id){
         return ResponseEntity.ok()
-                .body(playlistService.updateModify(id));
+                .body(new SingleResponse<>(200, "플레이리스트 수정(modify) 여부 변경 완료", playlistService.updateModify(id)));
     }
 
     @PatchMapping("/playlists/title/{Id}")
-    public ResponseEntity<Map<String, String>> updateTitle(@PathVariable("Id") Long id, @RequestBody Map<String, String> customTitle){
+    public ResponseEntity<SingleResponse<Map<String, String>>> updateTitle(@PathVariable("Id") Long id, @RequestBody Map<String, String> customTitle){
         return ResponseEntity.ok()
-                .body(playlistService.updateTitle(id, customTitle));
+                .body(new SingleResponse<>(200, "플레이리스트 제목 변경 완료", playlistService.updateTitle(id, customTitle)));
     }
 
     @DeleteMapping("/playlists/{playlistId}")
-    public ResponseEntity<Void> deletePlaylist(@PathVariable("playlistId") String playlistId) throws GeneralSecurityException, IOException {
+    public ResponseEntity<SingleResponse<Void>> deletePlaylist(@PathVariable("playlistId") String playlistId) throws GeneralSecurityException, IOException {
         return ResponseEntity.ok()
-                .body(playlistService.deletePlaylist(playlistId));
+                .body(new SingleResponse<>(200, "플레이리스트 삭제 완료", playlistService.deletePlaylist(playlistId)));
     }
 
 

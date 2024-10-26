@@ -5,6 +5,8 @@ import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import com.google.api.services.youtube.model.ResourceId;
+import com.lukcython.soundpin.config.exception.ExceptionMessage;
+import com.lukcython.soundpin.config.exception.NotFoundException;
 import com.lukcython.soundpin.domain.PlaylistItems;
 import com.lukcython.soundpin.dto.PlaylistItemRequest.InsertPlaylistItem;
 import com.lukcython.soundpin.dto.PlaylistItemRequest.UpdatePlaylistItem;
@@ -92,14 +94,14 @@ public class PlaylistItemService {
         PlaylistItem response = youtubeService.playlistItems()
                 .update(Collections.singletonList("snippet"), playlistItem).execute();
         return PlaylistItemInfoResponse.of(response).of(playlistItemRepository.findByPlaylistItemId(updatePlaylistItem.getPlaylistItemId())
-                .orElseThrow(() -> new IllegalArgumentException("PlaylistItem을 찾을 수 없습니다.")));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_ITEM_NOT_FOUND)));
     }
 
     @Transactional
     //유저 추가
     public Map<String, Long> updateLikes(Long id) {
         PlaylistItems playlistItems = playlistItemRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("PlaylistItem을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_ITEM_NOT_FOUND));
         playlistItems.isLikes();
         Map<String, Long> map = new HashMap<>();
         map.put("Likes", playlistItems.getLikes());
