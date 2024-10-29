@@ -73,12 +73,14 @@ public class PlaylistService {
     }
 
     @Transactional
-    public PlaylistInfoResponse updateYoutubePlaylist(String playlistId, UpdatePlaylistRequest updatePlaylistRequest) throws GeneralSecurityException, IOException {
+    public PlaylistInfoResponse updateYoutubePlaylist(Long Id, UpdatePlaylistRequest updatePlaylistRequest) throws GeneralSecurityException, IOException {
+        Playlists playlists = playlistRepository.findById(Id)
+                .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_NOT_FOUND));
         YouTube youtubeService = YoutubeApiUtil.getService();
         Playlist playlist = new Playlist();
 
         // Add the id string property to the Playlist object.
-        playlist.setId(playlistId);
+        playlist.setId(playlists.getPlaylistId());
 
         // Add the snippet object property to the Playlist object.
         PlaylistSnippet snippet = new PlaylistSnippet();
@@ -95,8 +97,7 @@ public class PlaylistService {
         Playlist updatePlaylist = youtubeService.playlists()
                 .update(Collections.singletonList("snippet,status"), playlist).execute();
 
-        return PlaylistInfoResponse.of(updatePlaylist).of(playlistRepository.findByPlaylistId(playlistId)
-                .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_NOT_FOUND)));
+        return PlaylistInfoResponse.of(updatePlaylist).of(playlists);
     }
 
     @Transactional
@@ -120,14 +121,16 @@ public class PlaylistService {
     }
 
     @Transactional
-    public Void deletePlaylist(String playlistId) throws GeneralSecurityException, IOException {
+    public Void deletePlaylist(Long Id) throws GeneralSecurityException, IOException {
+        Playlists playlists = playlistRepository.findById(Id)
+                .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_NOT_FOUND));
         YouTube youtubeService = YoutubeApiUtil.getService();
         // Define and execute the API request
         YouTube.Playlists.Delete request = youtubeService.playlists()
-                .delete(playlistId);
+                .delete(playlists.getPlaylistId());
         request.execute();
 
-        playlistRepository.deleteByPlaylistId(playlistId);
+        playlistRepository.delete(playlists);
         return null;
     }
 }
