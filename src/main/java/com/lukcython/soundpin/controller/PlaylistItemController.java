@@ -2,8 +2,9 @@ package com.lukcython.soundpin.controller;
 
 import com.lukcython.soundpin.config.response.ListResponse;
 import com.lukcython.soundpin.config.response.SingleResponse;
-import com.lukcython.soundpin.dto.PlaylistItemRequest.*;
-import com.lukcython.soundpin.dto.PlaylistItemResponse.*;
+import com.lukcython.soundpin.dto.PlaylistItemRequest.InsertPlaylistItem;
+import com.lukcython.soundpin.dto.PlaylistItemRequest.UpdatePlaylistItem;
+import com.lukcython.soundpin.dto.PlaylistItemResponse.PlaylistItemInfoResponse;
 import com.lukcython.soundpin.service.PlaylistItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,9 +23,9 @@ public class PlaylistItemController {
     private final PlaylistItemService playlistItemService;
 
     @GetMapping("/playlistItems/{playlistId}")
-    public ResponseEntity<ListResponse<PlaylistItemInfoResponse>> getPlaylistItems(@PathVariable("playlistId") String playlistId) throws GeneralSecurityException, IOException {
+    public ResponseEntity<ListResponse<PlaylistItemInfoResponse>> getPlaylistItems(@PathVariable("playlistId") Long Id) throws GeneralSecurityException, IOException {
         return ResponseEntity.ok()
-                .body(new ListResponse<>(200, "플레이리스트 아이템 목록 반환 성공", playlistItemService.getPlaylistItems(playlistId)));
+                .body(new ListResponse<>(200, "플레이리스트 아이템 목록 반환 성공", playlistItemService.getPlaylistItems(Id)));
     }
 
     @PostMapping("/playlistItems")
@@ -46,10 +46,10 @@ public class PlaylistItemController {
                 .body(new SingleResponse<>(200, "플레이리스트 아이템 좋아요 반영 완료", playlistItemService.updateLikes(id)));
     }
 
-    @DeleteMapping("/playlistItems/{playlistItemId}")
-    public ResponseEntity<SingleResponse<Void>> deletePlaylistItem(@PathVariable("playlistItemId") String playlistItemId) throws GeneralSecurityException, IOException {
+    @DeleteMapping("/playlistItems/{Id}")
+    public ResponseEntity<SingleResponse<Void>> deletePlaylistItem(@PathVariable("Id") Long Id) throws GeneralSecurityException, IOException {
         return ResponseEntity.ok()
-                .body(new SingleResponse<>(200, "플레이리스트 아이템 삭제 완료", playlistItemService.deletePlaylistItem(playlistItemId)));
+                .body(new SingleResponse<>(200, "플레이리스트 아이템 삭제 완료", playlistItemService.deletePlaylistItem(Id)));
     }
 
 }

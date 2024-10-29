@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -36,10 +35,10 @@ public class PlaylistController {
                 .body(new SingleResponse<>(201, "플레이리스트 추가 완료", playlistService.insertPlaylist(playlistRequest)));
     }
 
-    @PutMapping("/playlists/youtube/{playlistsId}")
-    public ResponseEntity<SingleResponse<PlaylistInfoResponse>> updateYoutubePlaylist(@PathVariable("playlistsId") String playlistId, @RequestBody UpdatePlaylistRequest updatePlaylistRequest) throws GeneralSecurityException, IOException {
+    @PutMapping("/playlists/youtube/{Id}")
+    public ResponseEntity<SingleResponse<PlaylistInfoResponse>> updateYoutubePlaylist(@PathVariable("Id") Long Id, @RequestBody UpdatePlaylistRequest updatePlaylistRequest) throws GeneralSecurityException, IOException {
         return ResponseEntity.ok()
-                .body(new SingleResponse<>(200, "(유튜브) 플레이리스트 수정 완료", playlistService.updateYoutubePlaylist(playlistId, updatePlaylistRequest)));
+                .body(new SingleResponse<>(200, "(유튜브) 플레이리스트 수정 완료", playlistService.updateYoutubePlaylist(Id, updatePlaylistRequest)));
     }
 
     @PatchMapping("/playlists/modify/{Id}")
@@ -54,10 +53,10 @@ public class PlaylistController {
                 .body(new SingleResponse<>(200, "플레이리스트 제목 변경 완료", playlistService.updateTitle(id, customTitle)));
     }
 
-    @DeleteMapping("/playlists/{playlistId}")
-    public ResponseEntity<SingleResponse<Void>> deletePlaylist(@PathVariable("playlistId") String playlistId) throws GeneralSecurityException, IOException {
+    @DeleteMapping("/playlists/{Id}")
+    public ResponseEntity<SingleResponse<Void>> deletePlaylist(@PathVariable("Id") Long Id) throws GeneralSecurityException, IOException {
         return ResponseEntity.ok()
-                .body(new SingleResponse<>(200, "플레이리스트 삭제 완료", playlistService.deletePlaylist(playlistId)));
+                .body(new SingleResponse<>(200, "플레이리스트 삭제 완료", playlistService.deletePlaylist(Id)));
     }
 
 
