@@ -9,10 +9,14 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.Value;
 import com.google.api.client.util.store.DataStoreFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.YouTubeScopes;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
@@ -21,7 +25,12 @@ import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 
+@RequiredArgsConstructor
 public class YoutubeApiUtil {
+
+    private final HttpSession httpSession;
+
+    private static String SERVER_IP = "localhost";
 
     private static DataStoreFactory dataStoreFactory;
     private static final String CLIENT_SECRETS= "client_secret.json";
@@ -35,7 +44,7 @@ public class YoutubeApiUtil {
      * @return an authorized Credential object.
      * @throws IOException
      */
-    public static Credential authorize(final NetHttpTransport httpTransport) throws IOException {
+    public static Credential authorize(final NetHttpTransport httpTransport, String userId) throws IOException {
         // Load client secrets.
         ClassPathResource resource = new ClassPathResource(CLIENT_SECRETS);
         GoogleClientSecrets clientSecrets =
@@ -47,9 +56,9 @@ public class YoutubeApiUtil {
                         .setDataStoreFactory(dataStoreFactory)
                         .setAccessType("offline")
                         .build();
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setHost(SERVER_IP).setPort(8888).build();
         Credential credential =
-                new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+                new AuthorizationCodeInstalledApp(flow, receiver).authorize(userId);
         return credential;
     }
 
@@ -59,10 +68,10 @@ public class YoutubeApiUtil {
      * @return an authorized API client service
      * @throws GeneralSecurityException, IOException
      */
-    public static YouTube getService() throws GeneralSecurityException, IOException {
+    public static YouTube getService(String userId) throws GeneralSecurityException, IOException {
         final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         dataStoreFactory = new FileDataStoreFactory(new File(".oauth-credentials"));
-        Credential credential = authorize(httpTransport);
+        Credential credential = authorize(httpTransport, userId);
         return new YouTube.Builder(httpTransport, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME)
                 .build();

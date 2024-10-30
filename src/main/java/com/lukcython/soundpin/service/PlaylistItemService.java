@@ -15,6 +15,7 @@ import com.lukcython.soundpin.dto.PlaylistItemResponse.PlaylistItemInfoResponse;
 import com.lukcython.soundpin.repository.PlaylistItemRepository;
 import com.lukcython.soundpin.repository.PlaylistRepository;
 import com.lukcython.soundpin.util.youtube.YoutubeApiUtil;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,12 +30,16 @@ public class PlaylistItemService {
 
     private final PlaylistRepository playlistRepository;
     private final PlaylistItemRepository playlistItemRepository;
+    private final HttpSession httpSession;
+
+    private static String USER;
 
 
     public List<PlaylistItemInfoResponse> getPlaylistItems(Long Id) throws GeneralSecurityException, IOException {
+        USER = (String) httpSession.getAttribute("userId");
         Playlists playlist = playlistRepository.findById(Id)
                 .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_ITEM_NOT_FOUND));
-        YouTube youtubeService = YoutubeApiUtil.getService();
+        YouTube youtubeService = YoutubeApiUtil.getService(USER);
         YouTube.PlaylistItems.List request = youtubeService.playlistItems()
                 .list(Collections.singletonList("snippet"));
         PlaylistItemListResponse response = request.setMaxResults(25L)
@@ -52,7 +57,7 @@ public class PlaylistItemService {
 
     @Transactional
     public Void insertPlaylistItem(InsertPlaylistItem insertPlaylistItem) throws GeneralSecurityException, IOException {
-        YouTube youtubeService = YoutubeApiUtil.getService();
+        YouTube youtubeService = YoutubeApiUtil.getService(USER);
 
         // Define the PlaylistItem object, which will be uploaded as the request body.
         PlaylistItem playlistItem = new PlaylistItem();
@@ -76,7 +81,7 @@ public class PlaylistItemService {
 
     @Transactional
     public PlaylistItemInfoResponse updateYoutubePlaylistItem(UpdatePlaylistItem updatePlaylistItem) throws GeneralSecurityException, IOException {
-        YouTube youtubeService = YoutubeApiUtil.getService();
+        YouTube youtubeService = YoutubeApiUtil.getService(USER);
 
         // Define the PlaylistItem object, which will be uploaded as the request body.
         PlaylistItem playlistItem = new PlaylistItem();
@@ -117,7 +122,7 @@ public class PlaylistItemService {
     public Void deletePlaylistItem(Long Id) throws GeneralSecurityException, IOException {
         PlaylistItems playlistItems = playlistItemRepository.findById(Id)
                 .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_ITEM_NOT_FOUND));
-        YouTube youtubeService = YoutubeApiUtil.getService();
+        YouTube youtubeService = YoutubeApiUtil.getService(USER);
         // Define and execute the API request
         youtubeService.playlistItems()
                 .delete(playlistItems.getPlaylistItemId()).execute();

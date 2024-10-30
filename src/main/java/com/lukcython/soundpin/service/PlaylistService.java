@@ -1,5 +1,7 @@
 package com.lukcython.soundpin.service;
 
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Playlist;
 import com.google.api.services.youtube.model.PlaylistListResponse;
@@ -13,6 +15,7 @@ import com.lukcython.soundpin.dto.PlaylistRequest.UpdatePlaylistRequest;
 import com.lukcython.soundpin.dto.PlaylistResponse.PlaylistInfoResponse;
 import com.lukcython.soundpin.repository.PlaylistRepository;
 import com.lukcython.soundpin.util.youtube.YoutubeApiUtil;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +29,14 @@ import java.util.*;
 public class PlaylistService {
 
     private final PlaylistRepository playlistRepository;
+    private final HttpSession httpSession;
 
-    public List<PlaylistInfoResponse> getPlaylist() throws GeneralSecurityException, IOException {
-        YouTube youtubeService = YoutubeApiUtil.getService();
+    private static String USER;
+
+    public List<PlaylistInfoResponse> getPlaylist(NetHttpTransport httpTransport, String userId) throws GeneralSecurityException, IOException {
+        USER = userId;
+        httpSession.setAttribute("userId", userId);
+        YouTube youtubeService = YoutubeApiUtil.getService(userId);
         YouTube.Playlists.List request = youtubeService.playlists()
                 .list(Collections.singletonList("snippet, status"));
         PlaylistListResponse response = request.setMaxResults(25L)
@@ -51,7 +59,7 @@ public class PlaylistService {
 
     @Transactional
     public Void insertPlaylist(InsertPlaylistRequest insertPlaylistRequest) throws GeneralSecurityException, IOException {
-        YouTube youtubeService = YoutubeApiUtil.getService();
+        YouTube youtubeService = YoutubeApiUtil.getService(USER);
         Playlist playlist = new Playlist();
 
         // Add the snippet object property to the Playlist object.
@@ -76,7 +84,7 @@ public class PlaylistService {
     public PlaylistInfoResponse updateYoutubePlaylist(Long Id, UpdatePlaylistRequest updatePlaylistRequest) throws GeneralSecurityException, IOException {
         Playlists playlists = playlistRepository.findById(Id)
                 .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_NOT_FOUND));
-        YouTube youtubeService = YoutubeApiUtil.getService();
+        YouTube youtubeService = YoutubeApiUtil.getService(USER);
         Playlist playlist = new Playlist();
 
         // Add the id string property to the Playlist object.
@@ -124,7 +132,7 @@ public class PlaylistService {
     public Void deletePlaylist(Long Id) throws GeneralSecurityException, IOException {
         Playlists playlists = playlistRepository.findById(Id)
                 .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_NOT_FOUND));
-        YouTube youtubeService = YoutubeApiUtil.getService();
+        YouTube youtubeService = YoutubeApiUtil.getService(USER);
         // Define and execute the API request
         YouTube.Playlists.Delete request = youtubeService.playlists()
                 .delete(playlists.getPlaylistId());

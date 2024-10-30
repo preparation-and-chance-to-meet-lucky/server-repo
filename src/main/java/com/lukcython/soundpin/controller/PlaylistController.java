@@ -1,5 +1,7 @@
 package com.lukcython.soundpin.controller;
 
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.lukcython.soundpin.config.response.ListResponse;
 import com.lukcython.soundpin.config.response.SingleResponse;
 import com.lukcython.soundpin.dto.PlaylistRequest.InsertPlaylistRequest;
@@ -22,10 +24,10 @@ public class PlaylistController {
 
     private final PlaylistService playlistService;
 
-    @GetMapping("/playlists")
-    public ResponseEntity<ListResponse<PlaylistInfoResponse>> getPlaylist() throws GeneralSecurityException, IOException {
+    @GetMapping("/playlists/{userId}")
+    public ResponseEntity<ListResponse<PlaylistInfoResponse>> getPlaylist(NetHttpTransport httpTransport, @PathVariable("userId") String userId) throws GeneralSecurityException, IOException {
         return ResponseEntity.ok()
-                .body(new ListResponse<>(200, "플레이리스트 반환 완료", playlistService.getPlaylist()));
+                .body(new ListResponse<>(200, "플레이리스트 반환 완료", playlistService.getPlaylist(httpTransport, userId)));
     }
 
 
