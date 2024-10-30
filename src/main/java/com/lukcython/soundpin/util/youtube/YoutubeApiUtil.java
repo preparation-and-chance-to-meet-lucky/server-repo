@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
+import java.util.Map;
+
+import static java.lang.System.getenv;
 
 public class YoutubeApiUtil {
 
@@ -36,6 +39,9 @@ public class YoutubeApiUtil {
      * @throws IOException
      */
     public static Credential authorize(final NetHttpTransport httpTransport) throws IOException {
+        Map<String, String> env = getenv();
+        String SERVER = env.get("SERVER_DOMAIN");
+        int PORT = Integer.parseInt(env.get("SERVER_PORT"));
         // Load client secrets.
         ClassPathResource resource = new ClassPathResource(CLIENT_SECRETS);
         GoogleClientSecrets clientSecrets =
@@ -47,7 +53,7 @@ public class YoutubeApiUtil {
                         .setDataStoreFactory(dataStoreFactory)
                         .setAccessType("offline")
                         .build();
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setHost(SERVER).setPort(PORT).build();
         Credential credential =
                 new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
         return credential;
