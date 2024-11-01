@@ -1,16 +1,15 @@
 package com.lukcython.soundpin.domain;
 
+import com.lukcython.soundpin.dto.UserChangeNicknameDto;
 import com.lukcython.soundpin.dto.UserCreateDto;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 
 @Entity
+@Table(name = "users")
 @Getter
 @NoArgsConstructor
 public class Users {
@@ -18,26 +17,29 @@ public class Users {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String email;
     private String username;
     private String passwd;
-    private String pin;
+    private String comment;
+    private String nickname;
 
     @Builder
-    public Users(String email, String username, String passwd, String pin){
-        this.email = email;
+    public Users(String username, String passwd, String comment, String nickname){
         this.username = username;
         this.passwd = passwd;
-        this.pin = pin;
+        this.comment = comment;
+        this.nickname = nickname;
     }
 
     public static Users of(UserCreateDto userCreateDto){
         return Users.builder()
-                .email(userCreateDto.getEmail())
                 .username(userCreateDto.getUsername())
                 .passwd(userCreateDto.getPasswd())
-                .pin(userCreateDto.getPin())
+                .comment(userCreateDto.getComment())
+                .nickname(userCreateDto.getNickname())
                 .build();
     }
 
+    public void changeNickname(UserChangeNicknameDto userChangeNicknameDto){
+        this.nickname = userChangeNicknameDto.getNickname();
+    }
 }
