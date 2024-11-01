@@ -27,4 +27,10 @@ public final class GlobalExceptionHandler {
         return ResponseEntity.badRequest()
                 .body(new ExceptionResponse(e.getDetails().getMessage(), HttpStatus.BAD_REQUEST.value()));
     }
+
+    @ExceptionHandler(YoutubeException.class)
+    public ResponseEntity<ExceptionResponse> handlerYoutubeException(YoutubeException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
+    }
 }

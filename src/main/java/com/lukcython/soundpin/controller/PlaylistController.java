@@ -4,6 +4,7 @@ import com.lukcython.soundpin.config.response.ListResponse;
 import com.lukcython.soundpin.config.response.SingleResponse;
 import com.lukcython.soundpin.dto.PlaylistRequest.InsertPlaylistRequest;
 import com.lukcython.soundpin.dto.PlaylistRequest.UpdatePlaylistRequest;
+import com.lukcython.soundpin.dto.PlaylistResponse;
 import com.lukcython.soundpin.dto.PlaylistResponse.PlaylistInfoResponse;
 import com.lukcython.soundpin.service.PlaylistService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class PlaylistController {
     private final PlaylistService playlistService;
 
     @GetMapping("/playlists")
-    public ResponseEntity<ListResponse<PlaylistInfoResponse>> getPlaylist() throws GeneralSecurityException, IOException {
+    public ResponseEntity<ListResponse<PlaylistResponse>> getPlaylist() throws GeneralSecurityException, IOException {
         return ResponseEntity.ok()
                 .body(new ListResponse<>(200, "플레이리스트 반환 완료", playlistService.getPlaylist()));
     }
@@ -36,7 +37,7 @@ public class PlaylistController {
     }
 
     @PutMapping("/playlists/youtube/{Id}")
-    public ResponseEntity<SingleResponse<PlaylistInfoResponse>> updateYoutubePlaylist(@PathVariable("Id") Long Id, @RequestBody UpdatePlaylistRequest updatePlaylistRequest) throws GeneralSecurityException, IOException {
+    public ResponseEntity<SingleResponse<PlaylistResponse>> updateYoutubePlaylist(@PathVariable("Id") Long Id, @RequestBody UpdatePlaylistRequest updatePlaylistRequest) throws GeneralSecurityException, IOException {
         return ResponseEntity.ok()
                 .body(new SingleResponse<>(200, "(유튜브) 플레이리스트 수정 완료", playlistService.updateYoutubePlaylist(Id, updatePlaylistRequest)));
     }
@@ -59,6 +60,12 @@ public class PlaylistController {
                 .body(new SingleResponse<>(200, "플레이리스트 삭제 완료", playlistService.deletePlaylist(Id)));
     }
 
+
+    @GetMapping("/playlists/{Id}")
+    public ResponseEntity<SingleResponse<PlaylistInfoResponse>> getPlaylistInfo(@PathVariable("Id") Long id) throws GeneralSecurityException, IOException {
+        return ResponseEntity.ok()
+                .body(new SingleResponse<>(200, "플레이리스트 정보 반환 완료", playlistService.getPlaylistInfo(id)));
+    }
 
 
     
