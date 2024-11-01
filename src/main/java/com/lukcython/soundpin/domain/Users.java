@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class User {
+public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,15 +24,15 @@ public class User {
     private String pin;
 
     @Builder
-    public User(String email, String username, String passwd, String pin){
+    public Users(String email, String username, String passwd, String pin){
         this.email = email;
         this.username = username;
         this.passwd = passwd;
         this.pin = pin;
     }
 
-    public static User of(UserCreateDto userCreateDto){
-        return User.builder()
+    public static Users of(UserCreateDto userCreateDto){
+        return Users.builder()
                 .email(userCreateDto.getEmail())
                 .username(userCreateDto.getUsername())
                 .passwd(userCreateDto.getPasswd())
