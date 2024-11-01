@@ -1,10 +1,7 @@
 package com.lukcython.soundpin.domain;
 
 import com.lukcython.soundpin.dto.PlaylistResponse;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,19 +20,32 @@ public class Playlists {
 
     private boolean canModify;
 
+    private String pin;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private Users user;
+
     @Builder
-    public Playlists(Long id, String playlistId, String customTitle, boolean canModify) {
+    public Playlists(Long id, String playlistId, String customTitle, boolean canModify, Users user, String pin) {
         this.id = id;
         this.playlistId = playlistId;
         this.customTitle = customTitle;
         this.canModify = canModify;
+        this.user = user;
+        this.pin = pin;
     }
 
-    public static Playlists of(PlaylistResponse playlist){
+    public static Playlists of(PlaylistResponse playlist, Users user){
+        int hash = playlist.getPlaylistId().hashCode();
+        // Ensure a positive number and limit to 6 digits
+        String pin = String.valueOf(Math.abs(hash % 1_000_000));
         return Playlists.builder()
                 .playlistId(playlist.getPlaylistId())
                 .customTitle("")
                 .canModify(true)
+                .user(user)
+                .pin(pin)
                 .build();
     }
 

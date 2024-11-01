@@ -8,12 +8,15 @@ import com.google.api.services.youtube.model.PlaylistStatus;
 import com.lukcython.soundpin.config.exception.ExceptionMessage;
 import com.lukcython.soundpin.config.exception.NotFoundException;
 import com.lukcython.soundpin.domain.Playlists;
+import com.lukcython.soundpin.domain.Users;
 import com.lukcython.soundpin.dto.PlaylistRequest.InsertPlaylistRequest;
 import com.lukcython.soundpin.dto.PlaylistRequest.UpdatePlaylistRequest;
 import com.lukcython.soundpin.dto.PlaylistResponse;
 import com.lukcython.soundpin.dto.PlaylistResponse.PlaylistInfoResponse;
 import com.lukcython.soundpin.repository.PlaylistRepository;
+import com.lukcython.soundpin.repository.UserRepository;
 import com.lukcython.soundpin.util.youtube.YoutubeApiUtil;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +30,8 @@ import java.util.*;
 public class PlaylistService {
 
     private final PlaylistRepository playlistRepository;
+    private final HttpSession httpSession;
+    private final UserRepository userRepository;
 
     public List<PlaylistResponse> getPlaylist() throws GeneralSecurityException, IOException {
         YouTube youtubeService = YoutubeApiUtil.getService();
@@ -42,11 +47,22 @@ public class PlaylistService {
                 .filter(playlist -> playlist.getSnippet().getTitle().substring(1,4).equalsIgnoreCase("pin"))
                 .toList();
 
+        String username = (String) httpSession.getAttribute("loginUsername");
+        Users users;
+        if (username==null){
+            users = userRepository.save(Users.builder().username("test").passwd("test").nickname("test").build());
+        }
+        else {
+            users = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new NotFoundException(ExceptionMessage.USER_NOT_FOUND));
+        }
+
+
         return playlists.stream()
                 .map(PlaylistResponse::of)
                 .map(playlist -> {
                     Optional<Playlists> play = playlistRepository.findByPlaylistId(playlist.getPlaylistId());
-                    return playlist.of(play.orElseGet(() -> playlistRepository.save(Playlists.of(playlist))));
+                    return playlist.of(play.orElseGet(() -> playlistRepository.save(Playlists.of(playlist, users))));
                 }).toList();
     }
 
