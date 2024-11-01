@@ -15,7 +15,6 @@ public class UserService {
 
     public Boolean createUser(UserCreateDto userCreateDto) {
         Optional<User> user = userRepository.findByEmail(userCreateDto.getEmail());
-        //여기서 .isEmpty 사용해도 되는지 확인 필요
         if (user.isEmpty()){
             userRepository.save(User.of(userCreateDto));
             return true;

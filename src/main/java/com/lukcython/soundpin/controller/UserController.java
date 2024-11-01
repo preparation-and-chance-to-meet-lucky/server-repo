@@ -16,15 +16,10 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/user")
-    public ResponseEntity<CommonResponse> createUser(@RequestBody UserCreateDto userCreateDto){
-        if (userService.createUser(userCreateDto)){
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new CommonResponse(true, 201, "회원가입 완료"));
-        } else{
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    //리스폰스 코드 뭐지..??
-                    .body(new CommonResponse(false, 444, "회원가입 실패"));
-        }
+    public ResponseEntity<SingleResponse<CommonResponse>> createUser(@RequestBody UserCreateDto userCreateDto){
+        userService.createUser(userCreateDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new SingleResponse<>(201, "회원가입 완료", null ));
 
     }
 
