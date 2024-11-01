@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "users")
 @Getter
 @NoArgsConstructor
-public class User {
+public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,15 +23,15 @@ public class User {
     private String nickname;
 
     @Builder
-    public User(String username, String passwd, String comment, String nickname){
+    public Users(String username, String passwd, String comment, String nickname){
         this.username = username;
         this.passwd = passwd;
         this.comment = comment;
         this.nickname = nickname;
     }
 
-    public static User of(UserCreateDto userCreateDto){
-        return User.builder()
+    public static Users of(UserCreateDto userCreateDto){
+        return Users.builder()
                 .username(userCreateDto.getUsername())
                 .passwd(userCreateDto.getPasswd())
                 .comment(userCreateDto.getComment())

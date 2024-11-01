@@ -40,8 +40,8 @@ public class YoutubeApiUtil {
      */
     public static Credential authorize(final NetHttpTransport httpTransport) throws IOException {
         Map<String, String> env = getenv();
-        String SERVER = env.get("DOMAIN");
-        int PORT = Integer.parseInt(env.get("PORT"));
+//        String SERVER = env.get("DOMAIN");
+//        int PORT = Integer.parseInt(env.get("PORT"));
         // Load client secrets.
         ClassPathResource resource = new ClassPathResource(CLIENT_SECRETS);
         GoogleClientSecrets clientSecrets =
@@ -53,7 +53,7 @@ public class YoutubeApiUtil {
                         .setDataStoreFactory(dataStoreFactory)
                         .setAccessType("offline")
                         .build();
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setHost(SERVER).setPort(PORT).build();
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setHost("ec2-3-36-76-110.ap-northeast-2.compute.amazonaws.com").setPort(8888).build();
         Credential credential =
                 new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
         return credential;
