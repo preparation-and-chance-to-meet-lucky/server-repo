@@ -1,6 +1,7 @@
 package com.lukcython.soundpin.service;
 
 import com.lukcython.soundpin.config.exception.ExceptionMessage;
+import com.lukcython.soundpin.config.exception.NotFoundException;
 import com.lukcython.soundpin.config.exception.UserException;
 import com.lukcython.soundpin.domain.User;
 import com.lukcython.soundpin.dto.UserCreateDto;
