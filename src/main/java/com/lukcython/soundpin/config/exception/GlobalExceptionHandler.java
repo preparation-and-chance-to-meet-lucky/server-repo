@@ -33,4 +33,11 @@ public final class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
     }
+
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity<ExceptionResponse> handlerUserException(UserException e){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ExceptionResponse(e.getMessage(), HttpStatus.UNAUTHORIZED.value()));
+    }
+
 }

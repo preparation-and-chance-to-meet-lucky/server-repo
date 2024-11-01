@@ -34,12 +34,7 @@ public class UserController {
     * */
     @PostMapping("/user/signUp")
     public ResponseEntity<SingleResponse<String>> createUser(@RequestBody UserCreateDto userCreateDto){
-        try{
-            userService.createUser(userCreateDto);
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new SingleResponse<>(202, "회원가입 실패", e.toString()));
-        }
+        userService.createUser(userCreateDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new SingleResponse<>(201, "회원가입 완료", "완료!! 드디어!!"));
     }
@@ -51,14 +46,11 @@ public class UserController {
     */
     @PostMapping("/user/signIn")
     public ResponseEntity<CommonResponse> loginUser(@RequestBody UserLoginDto userLoginDto){
-        if (userService.loginUser(userLoginDto)){
-            //HttpStatus 뭘로 해야하지...?
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(new CommonResponse(true, 200, "로그인 성공"));
-        } else{
-            return ResponseEntity.status(HttpStatus.ACCEPTED)
-                    .body(new CommonResponse(false, 202, "로그인 실패")); //비밀번호 불일치
-        }
+        userService.loginUser(userLoginDto);
+        //HttpStatus 뭘로 해야하지...?
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new CommonResponse(true, 200, "로그인 성공"));
+
     }
 
     @GetMapping("user/get/{username}")

@@ -44,14 +44,14 @@ public class UserService {
         }
     }
 
-    public Boolean loginUser(UserLoginDto userLoginDto) {
+    public void loginUser(UserLoginDto userLoginDto) {
         Users user = userRepository.findByUsername(userLoginDto.getUsername())
                 .orElseThrow(() -> new NotFoundException(ExceptionMessage.USER_NOT_FOUND));
         if (Objects.equals(user.getPasswd(), userLoginDto.getPasswd())){
             httpSession.setAttribute("loginUsername", user.getUsername());
-            return true;
+            return;
         }
-        return false;
+        throw new UserException(ExceptionMessage.USER_UNAUTHORIZATION);
     }
 
     @Transactional
