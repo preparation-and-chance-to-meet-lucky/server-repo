@@ -23,9 +23,7 @@ public class Users {
     private String nickname;
 
     @Builder
-    public Users(String email, String username, String passwd, String pin){
-        this.email = email;
-    public User(String username, String passwd, String comment, String nickname){
+    public Users(String username, String passwd, String comment, String nickname){
         this.username = username;
         this.passwd = passwd;
         this.comment = comment;
@@ -34,9 +32,6 @@ public class Users {
 
     public static Users of(UserCreateDto userCreateDto){
         return Users.builder()
-                .email(userCreateDto.getEmail())
-    public static User of(UserCreateDto userCreateDto){
-        return User.builder()
                 .username(userCreateDto.getUsername())
                 .passwd(userCreateDto.getPasswd())
                 .comment(userCreateDto.getComment())
