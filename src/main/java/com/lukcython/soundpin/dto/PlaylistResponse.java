@@ -4,48 +4,67 @@ import com.google.api.services.youtube.model.Playlist;
 import com.lukcython.soundpin.domain.Playlists;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
+@Getter
 public class PlaylistResponse {
 
+    protected Long id;
+    protected String playlistId;
+    protected String customTitle;
+    protected String title;
+    protected String description;
+    protected String imageUrl;
+    protected String status;
+
+    @Builder
+    public PlaylistResponse(Long id, String playlistId, String customTitle, String title, String description, String imageUrl, String status) {
+        this.id = id;
+        this.playlistId = playlistId;
+        this.customTitle = customTitle;
+        this.title = title;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.status = status;
+    }
+
+    public static PlaylistResponse of(Playlist playlist) {
+        return PlaylistResponse.builder()
+                .playlistId(playlist.getId())
+                .title(playlist.getSnippet().getTitle())
+                .description(playlist.getSnippet().getDescription())
+                .imageUrl(playlist.getSnippet().getThumbnails() == null ? null : playlist.getSnippet().getThumbnails().getDefault().getUrl())
+                .status(playlist.getStatus().getPrivacyStatus())
+                .build();
+    }
+
+    public PlaylistResponse of(Playlists playlists) {
+        this.id = playlists.getId();
+        this.customTitle = playlists.getCustomTitle();
+        return this;
+    }
+
     @Getter
-    public static class PlaylistInfoResponse {
-        private Long id;
-        private final String playlistId;
-        private String customTitle;
-        private final String title;
-        private final String description;
-        private final String imageUrl;
+    @Setter
+    public static class PlaylistInfoResponse extends PlaylistResponse {
         private boolean canModify;
-        private String status;
 
-        @Builder
         public PlaylistInfoResponse(Long id, String playlistId, String customTitle, String title, String description, String imageUrl, boolean canModify, String status) {
-            this.id = id;
-            this.playlistId = playlistId;
-            this.customTitle = customTitle;
-            this.title = title;
-            this.description = description;
-            this.imageUrl = imageUrl;
+            super(id, playlistId, customTitle, title, description, imageUrl, status);
             this.canModify = canModify;
-            this.status = status;
         }
 
-        public static PlaylistInfoResponse of(Playlist playlist){
-            return PlaylistInfoResponse.builder()
-                    .playlistId(playlist.getId())
-                    .title(playlist.getSnippet().getTitle())
-                    .description(playlist.getSnippet().getDescription())
-                    .imageUrl(playlist.getSnippet().getThumbnails() == null ? null : playlist.getSnippet().getThumbnails().getDefault().getUrl())
-                    .status(playlist.getStatus().getPrivacyStatus())
-                    .build();
-        }
-
-        public PlaylistInfoResponse of(Playlists playlists){
-            this.id = playlists.getId();
-            this.customTitle = playlists.getCustomTitle();
-            this.canModify = playlists.isCanModify();
-            return this;
+        public static PlaylistInfoResponse of(PlaylistResponse playlist, Playlists playlists) {
+            return new PlaylistInfoResponse(
+                    playlists.getId(),
+                    playlist.getPlaylistId(),
+                    playlists.getCustomTitle(),
+                    playlist.getTitle(),
+                    playlist.getDescription(),
+                    playlist.getImageUrl(),
+                    playlists.isCanModify(),
+                    playlist.getStatus()
+            );
         }
     }
 }
-

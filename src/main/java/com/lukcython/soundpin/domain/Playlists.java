@@ -31,7 +31,7 @@ public class Playlists {
         this.canModify = canModify;
     }
 
-    public static Playlists of(PlaylistResponse.PlaylistInfoResponse playlist){
+    public static Playlists of(PlaylistResponse playlist){
         return Playlists.builder()
                 .playlistId(playlist.getPlaylistId())
                 .customTitle("")

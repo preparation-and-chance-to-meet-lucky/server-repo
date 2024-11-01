@@ -10,6 +10,7 @@ import com.lukcython.soundpin.config.exception.NotFoundException;
 import com.lukcython.soundpin.domain.Playlists;
 import com.lukcython.soundpin.dto.PlaylistRequest.InsertPlaylistRequest;
 import com.lukcython.soundpin.dto.PlaylistRequest.UpdatePlaylistRequest;
+import com.lukcython.soundpin.dto.PlaylistResponse;
 import com.lukcython.soundpin.dto.PlaylistResponse.PlaylistInfoResponse;
 import com.lukcython.soundpin.repository.PlaylistRepository;
 import com.lukcython.soundpin.util.youtube.YoutubeApiUtil;
@@ -27,7 +28,7 @@ public class PlaylistService {
 
     private final PlaylistRepository playlistRepository;
 
-    public List<PlaylistInfoResponse> getPlaylist() throws GeneralSecurityException, IOException {
+    public List<PlaylistResponse> getPlaylist() throws GeneralSecurityException, IOException {
         YouTube youtubeService = YoutubeApiUtil.getService();
         YouTube.Playlists.List request = youtubeService.playlists()
                 .list(Collections.singletonList("snippet, status"));
@@ -42,7 +43,7 @@ public class PlaylistService {
                 .toList();
 
         return playlists.stream()
-                .map(PlaylistInfoResponse::of)
+                .map(PlaylistResponse::of)
                 .map(playlist -> {
                     Optional<Playlists> play = playlistRepository.findByPlaylistId(playlist.getPlaylistId());
                     return playlist.of(play.orElseGet(() -> playlistRepository.save(Playlists.of(playlist))));
@@ -73,7 +74,7 @@ public class PlaylistService {
     }
 
     @Transactional
-    public PlaylistInfoResponse updateYoutubePlaylist(Long Id, UpdatePlaylistRequest updatePlaylistRequest) throws GeneralSecurityException, IOException {
+    public PlaylistResponse updateYoutubePlaylist(Long Id, UpdatePlaylistRequest updatePlaylistRequest) throws GeneralSecurityException, IOException {
         Playlists playlists = playlistRepository.findById(Id)
                 .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_NOT_FOUND));
         YouTube youtubeService = YoutubeApiUtil.getService();
@@ -97,7 +98,7 @@ public class PlaylistService {
         Playlist updatePlaylist = youtubeService.playlists()
                 .update(Collections.singletonList("snippet,status"), playlist).execute();
 
-        return PlaylistInfoResponse.of(updatePlaylist).of(playlists);
+        return PlaylistResponse.of(updatePlaylist).of(playlists);
     }
 
     @Transactional
@@ -132,5 +133,25 @@ public class PlaylistService {
 
         playlistRepository.delete(playlists);
         return null;
+    }
+
+    public PlaylistInfoResponse getPlaylistInfo(Long id) throws GeneralSecurityException, IOException {
+        Playlists playlists = playlistRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_NOT_FOUND));
+        YouTube youtubeService = YoutubeApiUtil.getService();
+        YouTube.Playlists.List request = youtubeService.playlists()
+                .list(Collections.singletonList("snippet, status"));
+        PlaylistListResponse response = request.setMaxResults(25L)
+                .setMine(true)
+                .execute();
+
+        Playlist playlist = response.getItems().stream()
+                .filter(play -> play.getId().equals(playlists.getPlaylistId()))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(ExceptionMessage.YOUTUBE_PLAYLIST_NOT_FOUND));
+
+        PlaylistInfoResponse playlistResponse = PlaylistInfoResponse.of(PlaylistResponse.of(playlist), playlists);
+        playlistResponse.setCanModify(playlists.isCanModify());
+        return playlistResponse;
     }
 }
