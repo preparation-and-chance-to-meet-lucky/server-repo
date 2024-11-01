@@ -12,7 +12,6 @@ public interface PlaylistRepository extends JpaRepository<Playlists, Long> {
 
     Optional<Playlists> findByPlaylistId(String playlistId);
 
-    @Modifying
-    @Query("DELETE from Playlists p WHERE p.playlistId=:playlistId")
-    void deleteByPlaylistId(@Param("playlistId") String playlistId);
+    @Query("SELECT p from Playlists p where p.pin=:pin")
+    Optional<Playlists> findByPin(String pin);
 }

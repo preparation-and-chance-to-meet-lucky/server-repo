@@ -67,6 +67,12 @@ public class PlaylistController {
                 .body(new SingleResponse<>(200, "플레이리스트 정보 반환 완료", playlistService.getPlaylistInfo(id)));
     }
 
+    @GetMapping("/playlists/pin/{pin}")
+    public ResponseEntity<SingleResponse<PlaylistInfoResponse>> getPlaylistInfo(@PathVariable("pin") String pin) throws GeneralSecurityException, IOException {
+        return ResponseEntity.ok()
+                .body(new SingleResponse<>(200, "플레이리스트 정보 반환 완료", playlistService.getPlaylistInfo(pin)));
+    }
+
 
     
 

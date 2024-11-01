@@ -154,6 +154,10 @@ public class PlaylistService {
     public PlaylistInfoResponse getPlaylistInfo(Long id) throws GeneralSecurityException, IOException {
         Playlists playlists = playlistRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_NOT_FOUND));
+        return getPlaylistInfoResponse(playlists);
+    }
+
+    private static PlaylistInfoResponse getPlaylistInfoResponse(Playlists playlists) throws GeneralSecurityException, IOException {
         YouTube youtubeService = YoutubeApiUtil.getService();
         YouTube.Playlists.List request = youtubeService.playlists()
                 .list(Collections.singletonList("snippet, status"));
@@ -169,5 +173,11 @@ public class PlaylistService {
         PlaylistInfoResponse playlistResponse = PlaylistInfoResponse.of(PlaylistResponse.of(playlist), playlists);
         playlistResponse.setCanModify(playlists.isCanModify());
         return playlistResponse;
+    }
+
+    public PlaylistInfoResponse getPlaylistInfo(String pin) throws GeneralSecurityException, IOException {
+        Playlists playlists = playlistRepository.findByPin(pin)
+                .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_NOT_FOUND));
+        return getPlaylistInfoResponse(playlists);
     }
 }

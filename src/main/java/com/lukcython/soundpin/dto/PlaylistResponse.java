@@ -67,7 +67,7 @@ public class PlaylistResponse {
                     playlist.getImageUrl(),
                     playlists.isCanModify(),
                     playlist.getStatus(),
-                    playlist.getPin()
+                    playlists.getPin()
             );
         }
     }
