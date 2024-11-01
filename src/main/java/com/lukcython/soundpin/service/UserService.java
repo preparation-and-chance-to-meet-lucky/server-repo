@@ -6,6 +6,7 @@ import com.lukcython.soundpin.config.exception.UserException;
 import com.lukcython.soundpin.domain.User;
 import com.lukcython.soundpin.dto.UserChangeNicknameDto;
 import com.lukcython.soundpin.dto.UserCreateDto;
+import com.lukcython.soundpin.dto.UserDetailDto;
 import com.lukcython.soundpin.dto.UserLoginDto;
 import com.lukcython.soundpin.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
@@ -59,5 +60,11 @@ public class UserService {
             return true;
         }
         return false;
+    }
+
+    public UserDetailDto getUserData(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException(ExceptionMessage.USER_NOT_FOUND));
+        return UserDetailDto.of(user);
     }
 }
