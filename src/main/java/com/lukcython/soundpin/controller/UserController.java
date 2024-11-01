@@ -10,11 +10,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.Console;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
+    @GetMapping("/user")
+    public ResponseEntity<SingleResponse<CommonResponse>> echoCheck(){
+        userService.addSample();
+        return ResponseEntity.ok()
+                .body(new SingleResponse<>(200, "user sample", null));
+    }
 
     /*
     * 회원가입을 시도한다.
@@ -22,10 +31,15 @@ public class UserController {
     * 요구: username, passwd, (pin, email)
     * */
     @PostMapping("/user/signUp")
-    public ResponseEntity<SingleResponse<CommonResponse>> createUser(@RequestBody UserCreateDto userCreateDto){
-        userService.createUser(userCreateDto);
+    public ResponseEntity<SingleResponse<String>> createUser(@RequestBody UserCreateDto userCreateDto){
+        try{
+            userService.createUser(userCreateDto);
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new SingleResponse<>(202, "회원가입 실패", e.toString()));
+        }
         return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new SingleResponse<>(201, "회원가입 완료", null));
+                    .body(new SingleResponse<>(201, "회원가입 완료", "완료!! 드디어!!"));
     }
 
     /*

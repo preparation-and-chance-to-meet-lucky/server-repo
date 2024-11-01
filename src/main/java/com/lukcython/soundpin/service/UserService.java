@@ -8,6 +8,7 @@ import com.lukcython.soundpin.dto.UserCreateDto;
 import com.lukcython.soundpin.dto.UserLoginDto;
 import com.lukcython.soundpin.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +22,20 @@ public class UserService {
     private final UserRepository userRepository;
     private final HttpSession httpSession;
 
+    @Transactional
+    public void addSample(){
+        UserCreateDto userSample = new UserCreateDto("__sample__", "0000");
+        userRepository.save(User.of(userSample));
+    }
+
+    @Transactional
     public void createUser(UserCreateDto userCreateDto) {
         Optional<User> user = userRepository.findByUsername(userCreateDto.getUsername());
         //여기서 .isEmpty 사용해도 되는지 확인 필요
         if (user.isEmpty()){
-            throw new UserException(ExceptionMessage.USER_DUPLICATED);
-        } else {
             userRepository.save(User.of(userCreateDto));
+        } else {
+            throw new UserException(ExceptionMessage.USER_DUPLICATED);
         }
     }
 
