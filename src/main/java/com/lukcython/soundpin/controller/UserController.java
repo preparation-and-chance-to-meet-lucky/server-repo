@@ -1,6 +1,7 @@
 package com.lukcython.soundpin.controller;
 
 import com.lukcython.soundpin.config.response.CommonResponse;
+import com.lukcython.soundpin.config.response.SingleResponse;
 import com.lukcython.soundpin.dto.UserCreateDto;
 import com.lukcython.soundpin.dto.UserLoginDto;
 import com.lukcython.soundpin.service.UserService;
@@ -21,15 +22,10 @@ public class UserController {
     * 요구: email, username, passwd, pin
     * */
     @PostMapping("/user/signUp")
-    public ResponseEntity<CommonResponse> createUser(@RequestBody UserCreateDto userCreateDto){
-        if (userService.createUser(userCreateDto)){
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new CommonResponse(true, 201, "회원가입 완료"));
-        } else{
-            return ResponseEntity.status(HttpStatus.ACCEPTED)
-                    //리스폰스 코드 뭐지..??
-                    .body(new CommonResponse(false, 202, "회원가입 실패"));
-        }
+    public ResponseEntity<SingleResponse<CommonResponse>> createUser(@RequestBody UserCreateDto userCreateDto){
+        userService.createUser(userCreateDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new SingleResponse<>(201, "회원가입 완료", null));
     }
 
     /*

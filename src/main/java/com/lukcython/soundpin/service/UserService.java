@@ -1,7 +1,7 @@
 package com.lukcython.soundpin.service;
 
 import com.lukcython.soundpin.config.exception.ExceptionMessage;
-import com.lukcython.soundpin.config.exception.NotFoundException;
+import com.lukcython.soundpin.config.exception.UserException;
 import com.lukcython.soundpin.domain.User;
 import com.lukcython.soundpin.dto.UserCreateDto;
 import com.lukcython.soundpin.dto.UserLoginDto;
@@ -20,15 +20,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final HttpSession httpSession;
 
-    public Boolean createUser(UserCreateDto userCreateDto) {
+    public void createUser(UserCreateDto userCreateDto) {
         Optional<User> user = userRepository.findByEmail(userCreateDto.getEmail());
         //여기서 .isEmpty 사용해도 되는지 확인 필요
         if (user.isEmpty()){
             userRepository.save(User.of(userCreateDto));
-            return true;
-        }
-        else{
-            return false;
+        } else {
+            throw new UserException(ExceptionMessage.USER_DUPLICATED);
         }
     }
 
