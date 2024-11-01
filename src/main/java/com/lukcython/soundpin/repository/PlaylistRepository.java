@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface PlaylistRepository extends JpaRepository<Playlists, Long> {
 
     Optional<Playlists> findByPlaylistId(String playlistId);
+    Optional<Playlists> findByPin(String pin);
 
     @Modifying
     @Query("DELETE from Playlists p WHERE p.playlistId=:playlistId")
