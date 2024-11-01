@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 
 @Entity
 @Table(name = "users")
@@ -21,6 +23,10 @@ public class Users {
     private String passwd;
     private String comment;
     private String nickname;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Playlists> playlists;
+
 
     @Builder
     public Users(String username, String passwd, String comment, String nickname){

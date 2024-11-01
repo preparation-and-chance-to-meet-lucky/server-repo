@@ -16,9 +16,10 @@ public class PlaylistResponse {
     protected String description;
     protected String imageUrl;
     protected String status;
+    protected String pin;
 
     @Builder
-    public PlaylistResponse(Long id, String playlistId, String customTitle, String title, String description, String imageUrl, String status) {
+    public PlaylistResponse(Long id, String playlistId, String customTitle, String title, String description, String imageUrl, String status, String pin) {
         this.id = id;
         this.playlistId = playlistId;
         this.customTitle = customTitle;
@@ -26,6 +27,7 @@ public class PlaylistResponse {
         this.description = description;
         this.imageUrl = imageUrl;
         this.status = status;
+        this.pin = pin;
     }
 
     public static PlaylistResponse of(Playlist playlist) {
@@ -41,6 +43,7 @@ public class PlaylistResponse {
     public PlaylistResponse of(Playlists playlists) {
         this.id = playlists.getId();
         this.customTitle = playlists.getCustomTitle();
+        this.pin = playlists.getPin();
         return this;
     }
 
@@ -49,8 +52,8 @@ public class PlaylistResponse {
     public static class PlaylistInfoResponse extends PlaylistResponse {
         private boolean canModify;
 
-        public PlaylistInfoResponse(Long id, String playlistId, String customTitle, String title, String description, String imageUrl, boolean canModify, String status) {
-            super(id, playlistId, customTitle, title, description, imageUrl, status);
+        public PlaylistInfoResponse(Long id, String playlistId, String customTitle, String title, String description, String imageUrl, boolean canModify, String status, String pin) {
+            super(id, playlistId, customTitle, title, description, imageUrl, status, pin);
             this.canModify = canModify;
         }
 
@@ -63,7 +66,8 @@ public class PlaylistResponse {
                     playlist.getDescription(),
                     playlist.getImageUrl(),
                     playlists.isCanModify(),
-                    playlist.getStatus()
+                    playlist.getStatus(),
+                    playlist.getPin()
             );
         }
     }
