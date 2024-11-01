@@ -2,6 +2,7 @@ package com.lukcython.soundpin.controller;
 
 import com.lukcython.soundpin.config.response.CommonResponse;
 import com.lukcython.soundpin.config.response.SingleResponse;
+import com.lukcython.soundpin.dto.UserChangeNicknameDto;
 import com.lukcython.soundpin.dto.UserCreateDto;
 import com.lukcython.soundpin.dto.UserLoginDto;
 import com.lukcython.soundpin.service.UserService;
@@ -10,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.Console;
 
 @RestController
 @RequestMapping("/api")
@@ -18,17 +18,18 @@ import java.io.Console;
 public class UserController {
     private final UserService userService;
 
+
     @GetMapping("/user")
     public ResponseEntity<SingleResponse<CommonResponse>> echoCheck(){
         userService.addSample();
         return ResponseEntity.ok()
-                .body(new SingleResponse<>(200, "user sample", null));
+                .body(new SingleResponse<>(200, "user sample was made", null));
     }
 
     /*
     * 회원가입을 시도한다.
     * 동일한 이름의 이메일이 있으면 실패한다.
-    * 요구: username, passwd, (pin, email)
+    * 요구: username, passwd
     * */
     @PostMapping("/user/signUp")
     public ResponseEntity<SingleResponse<String>> createUser(@RequestBody UserCreateDto userCreateDto){
@@ -59,4 +60,16 @@ public class UserController {
         }
     }
 
+    @PutMapping("/user/setNickname/{username}")
+    public ResponseEntity<SingleResponse<String>> changeUsername(@PathVariable("username") String username,
+                                                                 @RequestBody UserChangeNicknameDto userChangeNicknameDto){
+        if (userService.changeUsername(userChangeNicknameDto, username)) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new SingleResponse<>(200, "수정 성공", "수정 성공"));
+        }
+        else{
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new SingleResponse<>(202, "수정 실패", "수정 권한이 없습니다. "));
+        }
+    }
 }
