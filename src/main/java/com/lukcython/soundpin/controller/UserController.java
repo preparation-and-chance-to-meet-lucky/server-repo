@@ -68,6 +68,13 @@ public class UserController {
                 .body(new SingleResponse<>(200, "데이더 조회 성공", userDetailDto));
     }
 
+    @GetMapping("user/getby/{pin}")
+    public ResponseEntity<SingleResponse<UserDetailDto>> getUserByPin(@PathVariable("pin") String pin){
+        UserDetailDto userDetailDto = userService.getUserByPin(pin);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SingleResponse<>(200, "데이터 조회 성공", userDetailDto));
+    }
+
     @PutMapping("/user/setNickname/{username}")
     public ResponseEntity<SingleResponse<String>> changeUsername(@PathVariable("username") String username,
                                                                  @RequestBody UserChangeNicknameDto userChangeNicknameDto){
