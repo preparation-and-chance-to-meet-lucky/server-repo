@@ -47,7 +47,6 @@ public class UserController {
     @PostMapping("/user/signIn")
     public ResponseEntity<CommonResponse> loginUser(@RequestBody UserLoginDto userLoginDto){
         userService.loginUser(userLoginDto);
-        //HttpStatus 뭘로 해야하지...?
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new CommonResponse(true, 200, "로그인 성공"));
 
@@ -70,13 +69,8 @@ public class UserController {
     @PutMapping("/user/setNickname/{username}")
     public ResponseEntity<SingleResponse<String>> changeUsername(@PathVariable("username") String username,
                                                                  @RequestBody UserChangeNicknameDto userChangeNicknameDto){
-        if (userService.changeUsername(userChangeNicknameDto, username)) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(new SingleResponse<>(200, "수정 성공", "수정 성공"));
-        }
-        else{
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(new SingleResponse<>(202, "수정 실패", "수정 권한이 없습니다. "));
-        }
+        userService.changeUsername(userChangeNicknameDto, username);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SingleResponse<>(200, "수정 성공", "수정 성공"));
     }
 }

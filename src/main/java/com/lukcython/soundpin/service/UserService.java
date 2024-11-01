@@ -55,14 +55,14 @@ public class UserService {
     }
 
     @Transactional
-    public boolean changeUsername(UserChangeNicknameDto userChangeNicknameDto, String username) {
+    public void changeUsername(UserChangeNicknameDto userChangeNicknameDto, String username) {
         Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException(ExceptionMessage.USER_NOT_FOUND));
         if (Objects.equals(httpSession.getAttribute("loginUsername"), username)){
             user.changeNickname(userChangeNicknameDto);
-            return true;
+            return ;
         }
-        return false;
+        throw new UserException(ExceptionMessage.USER_UNAUTHORIZATION);
     }
 
     public UserDetailDto getUserData(String username) {
