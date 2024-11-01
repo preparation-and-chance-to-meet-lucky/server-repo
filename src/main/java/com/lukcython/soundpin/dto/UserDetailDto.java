@@ -1,6 +1,6 @@
 package com.lukcython.soundpin.dto;
 
-import com.lukcython.soundpin.domain.User;
+import com.lukcython.soundpin.domain.Users;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,7 +17,7 @@ public class UserDetailDto {
         this.nickname = nickname;
     }
 
-    public static UserDetailDto of(User user){
+    public static UserDetailDto of(Users user){
         return UserDetailDto.builder()
                 .username(user.getUsername())
                 .comment(user.getComment())

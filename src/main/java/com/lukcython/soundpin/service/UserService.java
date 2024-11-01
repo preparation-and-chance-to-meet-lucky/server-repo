@@ -63,7 +63,7 @@ public class UserService {
     }
 
     public UserDetailDto getUserData(String username) {
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException(ExceptionMessage.USER_NOT_FOUND));
         return UserDetailDto.of(user);
     }
