@@ -4,6 +4,7 @@ import com.lukcython.soundpin.config.response.CommonResponse;
 import com.lukcython.soundpin.config.response.SingleResponse;
 import com.lukcython.soundpin.dto.UserChangeNicknameDto;
 import com.lukcython.soundpin.dto.UserCreateDto;
+import com.lukcython.soundpin.dto.UserDetailDto;
 import com.lukcython.soundpin.dto.UserLoginDto;
 import com.lukcython.soundpin.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +59,13 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.ACCEPTED)
                     .body(new CommonResponse(false, 202, "로그인 실패")); //비밀번호 불일치
         }
+    }
+
+    @GetMapping("user/get/{username}")
+    public ResponseEntity<SingleResponse<UserDetailDto>> getUserData(@PathVariable("username") String username){
+        UserDetailDto userDetailDto = userService.getUserData(username);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SingleResponse<>(200, "데이더 조회 성공", userDetailDto));
     }
 
     @PutMapping("/user/setNickname/{username}")
