@@ -22,20 +22,20 @@ public class UserService {
     private final HttpSession httpSession;
 
     public void createUser(UserCreateDto userCreateDto) {
-        Optional<User> user = userRepository.findByEmail(userCreateDto.getEmail());
+        Optional<User> user = userRepository.findByUsername(userCreateDto.getUsername());
         //여기서 .isEmpty 사용해도 되는지 확인 필요
         if (user.isEmpty()){
-            userRepository.save(User.of(userCreateDto));
-        } else {
             throw new UserException(ExceptionMessage.USER_DUPLICATED);
+        } else {
+            userRepository.save(User.of(userCreateDto));
         }
     }
 
     public Boolean loginUser(UserLoginDto userLoginDto) {
-        User user = userRepository.findByEmail(userLoginDto.getEmail())
+        User user = userRepository.findByUsername(userLoginDto.getUsername())
                 .orElseThrow(() -> new NotFoundException(ExceptionMessage.USER_NOT_FOUND));
         if (Objects.equals(user.getPasswd(), userLoginDto.getPasswd())){
-            httpSession.setAttribute("loginUserEmail", user.getEmail());
+            httpSession.setAttribute("loginUsername", user.getUsername());
             return true;
         }
         return false;

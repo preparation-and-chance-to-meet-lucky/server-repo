@@ -19,7 +19,7 @@ public class UserController {
     /*
     * 회원가입을 시도한다.
     * 동일한 이름의 이메일이 있으면 실패한다.
-    * 요구: email, username, passwd, pin
+    * 요구: username, passwd, (pin, email)
     * */
     @PostMapping("/user/signUp")
     public ResponseEntity<SingleResponse<CommonResponse>> createUser(@RequestBody UserCreateDto userCreateDto){
@@ -31,7 +31,7 @@ public class UserController {
     /*
     * 로그인은 이메일과 비밀번호로 진행한다.
     * 로그인 성공시 로그인 세션을 부여한다.
-    * 요구: email, passwd
+    * 요구: username, passwd
     */
     @PostMapping("/user/signIn")
     public ResponseEntity<CommonResponse> loginUser(@RequestBody UserLoginDto userLoginDto){
