@@ -40,8 +40,8 @@ public class YoutubeApiUtil {
      */
     public static Credential authorize(final NetHttpTransport httpTransport) throws IOException {
         Map<String, String> env = getenv();
-        String SERVER = env.get("SERVER_DOMAIN");
-        int PORT = Integer.parseInt(env.get("SERVER_PORT"));
+        String SERVER = env.get("DOMAIN");
+        int PORT = Integer.parseInt(env.get("PORT"));
         // Load client secrets.
         ClassPathResource resource = new ClassPathResource(CLIENT_SECRETS);
         GoogleClientSecrets clientSecrets =
