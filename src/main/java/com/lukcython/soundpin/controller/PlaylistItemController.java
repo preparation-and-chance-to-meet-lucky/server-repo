@@ -52,4 +52,10 @@ public class PlaylistItemController {
                 .body(new SingleResponse<>(200, "플레이리스트 아이템 삭제 완료", playlistItemService.deletePlaylistItem(Id)));
     }
 
+    @GetMapping("/playlistItems/pin/{pin}")
+    public ResponseEntity<ListResponse<PlaylistItemInfoResponse>> getPlaylistItems(@PathVariable("pin") String pin) throws GeneralSecurityException, IOException {
+        return ResponseEntity.ok()
+                .body(new ListResponse<>(200, "플레이리스트 아이템 목록 반환 성공", playlistItemService.getPlaylistItems(pin)));
+    }
+
 }

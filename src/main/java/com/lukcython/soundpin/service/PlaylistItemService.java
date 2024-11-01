@@ -34,20 +34,7 @@ public class PlaylistItemService {
     public List<PlaylistItemInfoResponse> getPlaylistItems(Long Id) throws GeneralSecurityException, IOException {
         Playlists playlist = playlistRepository.findById(Id)
                 .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_ITEM_NOT_FOUND));
-        YouTube youtubeService = YoutubeApiUtil.getService();
-        YouTube.PlaylistItems.List request = youtubeService.playlistItems()
-                .list(Collections.singletonList("snippet"));
-        PlaylistItemListResponse response = request.setMaxResults(25L)
-                .setPlaylistId(playlist.getPlaylistId())
-                .execute();
-        List<PlaylistItem> playlistItems = response.getItems();
-
-        return playlistItems.stream()
-                .map(PlaylistItemInfoResponse::of)
-                .map(Item -> {
-                    Optional<PlaylistItems> play = playlistItemRepository.findByPlaylistItemId(Item.getPlaylistItemId());
-                    return Item.of(play.orElseGet(() -> playlistItemRepository.save(PlaylistItems.of(Item))));
-                }).toList();
+        return getPlaylistItemInfoResponses(playlist);
     }
 
     @Transactional
@@ -123,5 +110,28 @@ public class PlaylistItemService {
                 .delete(playlistItems.getPlaylistItemId()).execute();
         playlistItemRepository.deleteById(Id);
         return null;
+    }
+
+    public List<PlaylistItemInfoResponse> getPlaylistItems(String pin) throws GeneralSecurityException, IOException {
+        Playlists playlist = playlistRepository.findByPin(pin)
+                .orElseThrow(() -> new NotFoundException(ExceptionMessage.PLAYLIST_ITEM_NOT_FOUND));
+        return getPlaylistItemInfoResponses(playlist);
+    }
+
+    private List<PlaylistItemInfoResponse> getPlaylistItemInfoResponses(Playlists playlist) throws GeneralSecurityException, IOException {
+        YouTube youtubeService = YoutubeApiUtil.getService();
+        YouTube.PlaylistItems.List request = youtubeService.playlistItems()
+                .list(Collections.singletonList("snippet"));
+        PlaylistItemListResponse response = request.setMaxResults(25L)
+                .setPlaylistId(playlist.getPlaylistId())
+                .execute();
+        List<PlaylistItem> playlistItems = response.getItems();
+
+        return playlistItems.stream()
+                .map(PlaylistItemInfoResponse::of)
+                .map(Item -> {
+                    Optional<PlaylistItems> play = playlistItemRepository.findByPlaylistItemId(Item.getPlaylistItemId());
+                    return Item.of(play.orElseGet(() -> playlistItemRepository.save(PlaylistItems.of(Item))));
+                }).toList();
     }
 }
